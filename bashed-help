@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+echo -e "\e[1;32mNAME\e[0;32m:\e[0m"
+echo '   bashed - omni-directional bash-builtin-centric transmutations'
+echo -e "\e[1;32mUSAGE\e[0;32m:\e[0m"
+echo -e "   Apply EXPRESSION(s) to each line of input passed through a pipe [\e[1;4;33mAND/OR\e[0m] read from a file:"
+echo -e "         \`\e[1;37m[ input... | ] bashed  'EXPRESSION(s)'...  [FILE]\e[0m\`"
+echo -e "                                                 \e[0;37m# if supplied, FILE must be the final argument.\e[0m"
+echo -e "   \e[1;4;33mOR\e[0m passed verbatim as \`\$1\`:"
+echo -e "         \`\e[1;37mbashed 'INPUT STRING' 'EXPRESSION(s)'... \e[0m\`"
+echo ""
+[[ "$1" != *(\-)@(all|expr?(ession)|full|syntax|v?(erbose)) ]] && echo -e " * \e[3mFor info on EXPRESSION syntax, run:\e[0m \`\e[1;37mbashed -h all\e[0m\`\n" || {
+	echo -e " * \e[1;33mEXPRESSIONs\e[0m are applied"
+	echo '         - to each line of input (unless otherwise specified)'
+	echo '         - in the order they were supplied,'
+	echo ""
+	echo -e "\e[1;32mBASH BUILT-IN EXPANSIONS\e[0;32m:\e[0;37m (do what you'd expect)\e[0m"
+	echo "  ':N'        : from Nth to last char(s)"
+	echo "  '::N'       : from first to Nth char(s)"
+	echo "  ':N:N'      : from Nth to Nth char(s)"
+	echo "  '%...*'     : preceding last of ..."
+	echo "  '%%...*'    : preceding any of ..."
+	echo "  '#*...'     : after first of ..."
+	echo "  '##*...'    : after any of ..."
+	echo "  '/w/[e]'    : replace first of 'w' with ['e']"
+	echo "  '//w/[e]'   : replace any of 'w' with ['e']"
+	echo "  '^'         : make first character Uppercase."
+	echo "  '^^'        : make all characters UPPERCASE."
+	echo "  ','         : make first character lOWERCASE."
+	echo "  ',,'        : make all characters lowercase."
+	echo "  '~[abc]'    : swap case of first [(detected) optionally specified] character."
+	echo "  '~~[abc]'   : swap case of all [(detected) optionally specified] characters."
+	echo -e "                \e[0;37m# if [character(s)] are specified but none are detected, does nothing\e[0m"
+	echo -e "                \e[0;37m#  otherwise, behaves normally.\e[0m"
+	echo ""
+	echo -e "\e[1;32mFILTERING & CONDITIONAL EXPRESSIONS\e[0;32m:\e[0m"
+	echo "  '??[=|~]_'        : Supress lines not [matching|containing] _"
+	echo "  '?![=|~]_'        : Supress lines [matching|containing] _"
+	echo "  '??[=|~]_.{EXPR}' : Apply EXPR to lines [matching|containing] _"
+	echo "  '?![=|~]_.{EXPR}' : Apply EXPR to lines not [matching|containing] _"
+	echo -e "      \e[0;37m# examples:\e[0m"
+	echo -e "      \e[0;37m#\e[0m  \`... | bashed '??=*whatev*' \`\e[0;37m (supress lines not matching *'whatev'*)\e[0m"
+	echo -e "      \e[0;37m#\e[0m  \`... | bashed '?!~whatev' \`\e[0;37m (supress lines containing 'whatev')\e[0m"
+	echo -e "      \e[0;37m#\e[0m  \`... | bashed '??~whatev.{(_).}' \`\e[0;37m (prepend all lines containing 'whatev' with '_')\e[0m"
+	echo ""
+	echo -e "\e[1;32mMISCELLANEOUS EXPRESSIONS\e[0;32m:\e[0m"
+	echo '  -[BP],'
+	echo '    --before,'
+	echo '    --prepend _'
+	echo "          '(_).'    : Prepend each line with _"
+	echo ""
+	echo '  -A,'
+	echo '   --after,'
+	echo '   --append _'
+	echo "        '.(_)'      : Append _ to each line"
+	echo ""
+	echo '   -[fFcC],         : POSIX color codes (defaults to `\e[0;...`(typically 30-40),'
+	echo '   --[color,font]=                       but any `\e[...` expression should work)'
+	echo -e "                   \e[0;37m# examples:\e[0m"
+	echo -e "                   \e[0;37m#\e[0m   \`... | bashed -c '1;33;3' \`"
+	echo -e "                   \e[0;37m#\e[0m   \`... | bashed --color=33 \`"
+	echo -e "                    \e[0;37m(*) supply font effects last as any remaining EXPRESSIONS are likely to remove them.\e[0m"
+	echo ""
+	echo "  ':*',          : Extends the \`:N:N\` substring expansions to allow any string/[pattern]. Carve away."
+	echo -e "   '::*',         \e[0;37m# examples:\e[0m"
+	echo -e "    ':*:*',       \e[0;37m#\e[0m   \`... | bashed ':[wW]::hat[eE]ver' \`"
+	echo -e "     ':*::*'      \e[0;37m#\e[0m   \`... | bashed ':ex:[ABC123]' \`"
+	echo -e "                  \e[0;37m#\e[0m   \`... | bashed '::[aAbBcC]' \`"
+	echo ""
+	echo "  \"//_/*\$'\\n'*\" : Replace each of '_' with *newline*"
+	echo ""
+	echo "  \"//\$'\\n'/*\"   : Remove or replace newlines with [*| ]"
+	echo ""
+	echo " '{N}.EXPR'     : Repeatedly apply EXPR(any other EXPRESSION) N times."
+	echo -e "                 \e[0;37m# example:\e[0m"
+	echo -e "                 \e[0;37m# trim up to third occurance of ['/'or'\']\e[0m"
+	echo "                 $(echo -e "\e[0;37m#\e[0m")   \`... | bashed '{3}."'#*[\/\\]'"' \`"
+	echo ""
+}
