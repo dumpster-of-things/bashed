@@ -1,0 +1,7 @@
+Package: bashed
+Version: 1.0
+Required: no
+Priority: optional
+Maintainer: bunyon
+Depends: bash, coreutils, findutils
+Description: bashed is an omni-directional bash-builtins-based tool for transforming lines of text. ( https://github.com/dumpster-of-things/bashed )
